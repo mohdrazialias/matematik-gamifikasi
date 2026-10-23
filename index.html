@@ -3,387 +3,238 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MathQuest: Gamifikasi Matematik Sekolah Rendah</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
+    <title>Sistem Profil & Skor Terintegrasi</title>
     <style>
         body {
-            font-family: 'Fredoka', sans-serif;
-            background-color: #f0fdf4;
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-        .bounce-in {
-            animation: bounceIn 0.5s ease-out;
+        .dashboard {
+            display: flex;
+            gap: 20px;
+            max-width: 900px;
+            width: 100%;
+            flex-wrap: wrap;
+            justify-content: center;
         }
-        @keyframes bounceIn {
-            0% { transform: scale(0.3); opacity: 0; }
-            50% { transform: scale(1.05); }
-            70% { transform: scale(0.9); }
-            100% { transform: scale(1); opacity: 1; }
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            flex: 1;
+            min-width: 320px;
+            max-width: 400px;
+            box-sizing: border-box;
         }
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-top: 0;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #666;
+            font-weight: bold;
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        textarea { resize: none; height: 70px; }
+        button {
+            width: 100%;
+            padding: 12px;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+            transition: opacity 0.2s;
+        }
+        button:hover { opacity: 0.9; }
+        .btn-green { background-color: #28a745; }
+        .btn-blue { background-color: #007bff; }
+        .btn-red { background-color: #dc3545; }
+        
+        /* Gaya Paparan Profil & Skor */
+        .display-data p {
+            font-size: 16px;
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 5px;
+            border-left: 5px solid #007bff;
+            margin: 10px 0;
+        }
+        .score-box {
+            text-align: center;
+            font-size: 48px;
+            font-weight: bold;
+            color: #28a745;
+            margin: 20px 0;
+            background: #e8f5e9;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .score-controls {
+            display: flex;
+            gap: 10px;
+        }
+        .score-controls button { flex: 1; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-between p-4 bg-gradient-to-b from-sky-100 to-emerald-50 text-slate-800">
+<body>
 
-    <!-- Top Header & Stats -->
-    <header class="w-full max-w-md bg-white rounded-2xl p-4 shadow-md flex justify-between items-center mb-4 border-4 border-amber-400">
-        <div class="flex items-center space-x-2">
-            <span class="text-2xl">🏆</span>
-            <div>
-                <p class="text-xs text-gray-500 font-bold uppercase tracking-wider">Tahap</p>
-                <p id="lvl-display" class="text-xl font-black text-amber-500">1</p>
+<div class="dashboard">
+    
+    <!-- BAHAGIAN 1: KAD PROFIL -->
+    <div class="card">
+        <!-- Borang Input Profil -->
+        <div id="formSection">
+            <h2>Cipta Profil</h2>
+            <div class="form-group">
+                <label for="nameInput">Nama Penuh:</label>
+                <input type="text" id="nameInput" placeholder="Masukkan nama anda">
             </div>
-        </div>
-        <div class="flex items-center space-x-2">
-            <span class="text-2xl">✨</span>
-            <div>
-                <p class="text-xs text-gray-500 font-bold uppercase tracking-wider">XP</p>
-                <p id="xp-display" class="text-xl font-black text-emerald-500">0</p>
+            <div class="form-group">
+                <label for="bioInput">Bio Diri:</label>
+                <textarea id="bioInput" placeholder="Ceritakan sedikit tentang diri anda"></textarea>
             </div>
+            <button class="btn-green" onclick="saveProfile()">Simpan Profil</button>
         </div>
-        <div class="flex items-center space-x-2">
-            <span class="text-2xl">🔥</span>
-            <div>
-                <p class="text-xs text-gray-500 font-bold uppercase tracking-wider">Streak</p>
-                <p id="streak-display" class="text-xl font-black text-orange-500">0</p>
-            </div>
-        </div>
-    </header>
 
-    <!-- Main Dynamic Content Container -->
-    <main class="w-full max-w-md flex-grow flex flex-col justify-center items-center">
+        <!-- Paparan Profil Terjaga -->
+        <div id="displaySection" class="display-data" style="display: none;">
+            <h2>Profil Pengguna</h2>
+            <p><strong>Nama:</strong> <span id="displayName"></span></p>
+            <p><strong>Bio:</strong> <span id="displayBio"></span></p>
+            <button class="btn-blue" onclick="editProfile()">Edit Profil</button>
+            <button class="btn-red" onclick="deleteProfile()">Padam Profil</button>
+        </div>
+    </div>
+
+    <!-- BAHAGIAN 2: KAD SISTEM SKOR -->
+    <div class="card">
+        <h2>Skor Semasa</h2>
+        <div class="score-box" id="scoreDisplay">0</div>
         
-        <!-- Screen 1: Grade Selection -->
-        <div id="screen-select" class="w-full bg-white rounded-3xl p-6 shadow-xl border-4 border-sky-400 text-center space-y-6">
-            <h1 class="text-3xl font-black text-sky-600 tracking-wide">📐 MathQuest 🚀</h1>
-            <p class="text-gray-600 text-sm font-medium">Pilih darjah untuk memulakan pengembaraan matematik anda!</p>
-            
-            <div class="grid grid-cols-2 gap-4">
-                <button onclick="startGame(1)" class="p-4 bg-red-400 hover:bg-red-500 text-white font-bold text-lg rounded-2xl shadow-md transform hover:-translate-y-1 transition border-b-4 border-red-600 active:border-b-0">Darjah 1</button>
-                <button onclick="startGame(2)" class="p-4 bg-orange-400 hover:bg-orange-500 text-white font-bold text-lg rounded-2xl shadow-md transform hover:-translate-y-1 transition border-b-4 border-orange-600 active:border-b-0">Darjah 2</button>
-                <button onclick="startGame(3)" class="p-4 bg-yellow-400 hover:bg-yellow-500 text-white font-bold text-lg rounded-2xl shadow-md transform hover:-translate-y-1 transition border-b-4 border-yellow-600 active:border-b-0">Darjah 3</button>
-                <button onclick="startGame(4)" class="p-4 bg-green-400 hover:bg-green-500 text-white font-bold text-lg rounded-2xl shadow-md transform hover:-translate-y-1 transition border-b-4 border-green-600 active:border-b-0">Darjah 4</button>
-                <button onclick="startGame(5)" class="p-4 bg-blue-400 hover:bg-blue-500 text-white font-bold text-lg rounded-2xl shadow-md transform hover:-translate-y-1 transition border-b-4 border-blue-600 active:border-b-0">Darjah 5</button>
-                <button onclick="startGame(6)" class="p-4 bg-purple-400 hover:bg-purple-500 text-white font-bold text-lg rounded-2xl shadow-md transform hover:-translate-y-1 transition border-b-4 border-purple-600 active:border-b-0">Darjah 6</button>
-            </div>
+        <div class="score-controls">
+            <button class="btn-green" onclick="changeScore(1)">+1 Mata</button>
+            <button class="btn-red" onclick="changeScore(-1)">-1 Mata</button>
         </div>
+        <button class="btn-blue" style="background-color: #6c757d;" onclick="resetScore()">Reset Skor</button>
+    </div>
 
-        <!-- Screen 2: Gameplay -->
-        <div id="screen-game" class="w-full bg-white rounded-3xl p-6 shadow-xl border-4 border-emerald-400 text-center space-y-6 hidden relative">
-            <button onclick="showSelection()" class="absolute top-4 left-4 text-gray-400 hover:text-gray-600 font-bold text-sm">↩ Menu</button>
-            
-            <div class="pt-4">
-                <span id="grade-badge" class="px-4 py-1 bg-emerald-100 text-emerald-700 font-bold rounded-full text-xs uppercase tracking-widest">Darjah 1</span>
-            </div>
+</div>
 
-            <!-- Question Area -->
-            <div id="question-box" class="text-4xl font-black text-slate-700 my-8 py-4 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200 min-h-[100px] flex items-center justify-center">
-                1 + 1 = ?
-            </div>
+<script>
+    // ==========================================
+    // LOGIK JAVASCRIPT UNTUK SISTEM PROFIL
+    // ==========================================
+    function saveProfile() {
+        const name = document.getElementById('nameInput').value.trim();
+        const bio = document.getElementById('bioInput').value.trim();
 
-            <!-- Feedback Message -->
-            <div id="feedback" class="h-6 text-md font-bold transition-all duration-300"></div>
-
-            <!-- Input Form -->
-            <form onsubmit="checkAnswer(event)" class="space-y-4">
-                <input type="text" id="answer-input" inputmode="decimal" autocomplete="off" placeholder="Tulis jawapan di sini..." class="w-full p-4 text-center text-2xl font-bold border-4 border-slate-200 rounded-2xl focus:outline-none focus:border-emerald-400 transition">
-                <button type="submit" class="w-full p-4 bg-emerald-400 hover:bg-emerald-500 text-white font-black text-xl rounded-2xl shadow-md border-b-4 border-emerald-600 active:border-b-0 transform hover:-translate-y-0.5 transition">SEMAK JAWAPAN</button>
-            </form>
-        </div>
-    </main>
-
-    <!-- Footer Credit -->
-    <footer class="mt-6 text-xs text-gray-400 font-medium">
-        MathQuest &copy; 2026 - Dihoskan di GitHub Pages
-    </footer>
-
-    <!-- Audio & Game Logic -->
-    <script>
-        // State Pengguna
-        let state = {
-            xp: 0,
-            level: 1,
-            streak: 0,
-            currentGrade: 1,
-            currentAnswer: null
-        };
-
-        // Synthesized Sound Effects via Web Audio API (Tiada fail luaran)
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        
-        function playSound(type) {
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-
-            if (type === 'success') {
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(440, audioCtx.currentTime); // A4
-                osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.1); // A5
-                gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
-                osc.start();
-                osc.stop(audioCtx.currentTime + 0.3);
-            } else if (type === 'fail') {
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(220, audioCtx.currentTime);
-                osc.frequency.linearRampToValueAtTime(110, audioCtx.currentTime + 0.2);
-                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
-                osc.start();
-                osc.stop(audioCtx.currentTime + 0.3);
-            } else if (type === 'levelup') {
-                osc.type = 'triangle';
-                const now = audioCtx.currentTime;
-                osc.frequency.setValueAtTime(261.6, now); // C4
-                osc.frequency.setValueAtTime(329.6, now + 0.1); // E4
-                osc.frequency.setValueAtTime(392.0, now + 0.2); // G4
-                osc.frequency.setValueAtTime(523.3, now + 0.3); // C5
-                gain.gain.setValueAtTime(0.2, now);
-                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
-                osc.start();
-                osc.stop(now + 0.5);
-            }
+        if (name === "" || bio === "") {
+            alert("Sila isi semua ruangan profil!");
+            return;
         }
 
-        // Navigasi Skrin
-        function startGame(grade) {
-            state.currentGrade = grade;
-            document.getElementById('screen-select').classList.add('hidden');
-            document.getElementById('screen-game').classList.remove('hidden');
-            document.getElementById('grade-badge').innerText = `Darjah ${grade}`;
-            document.getElementById('grade-badge').className = `px-4 py-1 font-bold rounded-full text-xs uppercase tracking-widest ` + getGradeBadgeColor(grade);
-            generateQuestion();
+        const userProfile = { name: name, bio: bio };
+        localStorage.setItem('savedProfile', JSON.stringify(userProfile));
+        checkProfile();
+    }
+
+    function checkProfile() {
+        const data = localStorage.getItem('savedProfile');
+        if (data) {
+            const profile = JSON.parse(data);
+            document.getElementById('displayName').innerText = profile.name;
+            document.getElementById('displayBio').innerText = profile.bio;
+            document.getElementById('formSection').style.display = 'none';
+            document.getElementById('displaySection').style.display = 'block';
+        } else {
+            document.getElementById('formSection').style.display = 'block';
+            document.getElementById('displaySection').style.display = 'none';
         }
+    }
 
-        function showSelection() {
-            document.getElementById('screen-game').classList.add('hidden');
-            document.getElementById('screen-select').classList.remove('hidden');
-            document.getElementById('feedback').innerText = '';
-            document.getElementById('answer-input').value = '';
+    function editProfile() {
+        const data = localStorage.getItem('savedProfile');
+        if (data) {
+            const profile = JSON.parse(data);
+            document.getElementById('nameInput').value = profile.name;
+            document.getElementById('bioInput').value = profile.bio;
         }
+        document.getElementById('formSection').style.display = 'block';
+        document.getElementById('displaySection').style.display = 'none';
+    }
 
-        function getGradeBadgeColor(grade) {
-            const colors = {
-                1: 'bg-red-100 text-red-700',
-                2: 'bg-orange-100 text-orange-700',
-                3: 'bg-yellow-100 text-yellow-700',
-                4: 'bg-green-100 text-green-700',
-                5: 'bg-blue-100 text-blue-700',
-                6: 'bg-purple-100 text-purple-700'
-            };
-            return colors[grade] || 'bg-slate-100 text-slate-700';
+    function deleteProfile() {
+        if (confirm("Adakah anda pasti mahu memadam profil ini?")) {
+            localStorage.removeItem('savedProfile');
+            document.getElementById('nameInput').value = "";
+            document.getElementById('bioInput').value = "";
+            checkProfile();
         }
+    }
 
-        // Enjin Penjana Soalan Mengikut Silibus
-        function generateQuestion() {
-            let num1, num2, op, questionText, ans;
-            const grade = state.currentGrade;
-            
-            // Set input filter/placeholder secara dinamik mengikut jenis soalan
-            const inputField = document.getElementById('answer-input');
-            if (grade === 5) {
-                inputField.placeholder = "Contoh jawapan: 1/2 atau 25";
-            } else if (grade === 6) {
-                inputField.placeholder = "Contoh: 5, -3, atau 2.5";
-            } else {
-                inputField.placeholder = "Tulis jawapan angka di sini...";
-            }
+    // ==========================================
+    // LOGIK JAVASCRIPT UNTUK SISTEM SKOR
+    // ==========================================
+    let currentScore = 0;
 
-            switch(grade) {
-                case 1:
-                    // Darjah 1: Tambah/Tolak Asas (Nombor 1 hingga 20)
-                    op = Math.random() > 0.5 ? '+' : '-';
-                    if (op === '+') {
-                        num1 = Math.floor(Math.random() * 12) + 1;
-                        num2 = Math.floor(Math.random() * 8) + 1;
-                        ans = num1 + num2;
-                    } else {
-                        num1 = Math.floor(Math.random() * 15) + 5;
-                        num2 = Math.floor(Math.random() * num1);
-                        ans = num1 - num2;
-                    }
-                    questionText = `${num1} ${op} ${num2} = ?`;
-                    break;
-
-                case 2:
-                    // Darjah 2: Nombor hingga 100, Sifir asas (2, 5, 10)
-                    let mode2 = Math.floor(Math.random() * 3);
-                    if (mode2 === 0) {
-                        num1 = Math.floor(Math.random() * 60) + 20;
-                        num2 = Math.floor(Math.random() * 30) + 5;
-                        ans = num1 + num2;
-                        questionText = `${num1} + ${num2} = ?`;
-                    } else if (mode2 === 1) {
-                        num1 = Math.floor(Math.random() * 80) + 10;
-                        num2 = Math.floor(Math.random() * num1);
-                        ans = num1 - num2;
-                        questionText = `${num1} - ${num2} = ?`;
-                    } else {
-                        const tables = [2, 5, 10];
-                        num1 = tables[Math.floor(Math.random() * tables.length)];
-                        num2 = Math.floor(Math.random() * 9) + 1;
-                        ans = num1 * num2;
-                        questionText = `${num1} × ${num2} = ?`;
-                    }
-                    break;
-
-                case 3:
-                    // Darjah 3: Tambah/Tolak lebih besar, Darab/Bahagi standard
-                    let mode3 = Math.floor(Math.random() * 3);
-                    if (mode3 === 0) {
-                        num1 = Math.floor(Math.random() * 400) + 100;
-                        num2 = Math.floor(Math.random() * 400) + 100;
-                        ans = num1 + num2;
-                        questionText = `${num1} + ${num2} = ?`;
-                    } else if (mode3 === 1) {
-                        num1 = Math.floor(Math.random() * 7) + 3; 
-                        num2 = Math.floor(Math.random() * 9) + 1;
-                        ans = num1 * num2;
-                        questionText = `${num1} × ${num2} = ?`;
-                    } else {
-                        num2 = Math.floor(Math.random() * 5) + 2; 
-                        ans = Math.floor(Math.random() * 8) + 1;
-                        num1 = num2 * ans; // memastikan tiada baki
-                        questionText = `${num1} ÷ ${num2} = ?`;
-                    }
-                    break;
-
-                case 4:
-                    // Darjah 4: Operasi Bergabung & Nilai Besar
-                    let mode4 = Math.floor(Math.random() * 2);
-                    if (mode4 === 0) {
-                        // Gabungan tambah dan tolak
-                        num1 = Math.floor(Math.random() * 1000) + 500;
-                        num2 = Math.floor(Math.random() * 400) + 100;
-                        let num3 = Math.floor(Math.random() * 200) + 50;
-                        ans = num1 + num2 - num3;
-                        questionText = `${num1} + ${num2} - ${num3} = ?`;
-                    } else {
-                        // Darab nombor 2 digit dengan 1 digit besar
-                        num1 = Math.floor(Math.random() * 80) + 12;
-                        num2 = Math.floor(Math.random() * 7) + 3;
-                        ans = num1 * num2;
-                        questionText = `${num1} × ${num2} = ?`;
-                    }
-                    break;
-
-                case 5:
-                    // Darjah 5: Pecahan mudah & Peratusan
-                    let mode5 = Math.floor(Math.random() * 2);
-                    if (mode5 === 0) {
-                        // Pecahan wajar setara / penambahan pecahan asas
-                        const denominators = [3, 4, 5, 6, 8];
-                        let den = denominators[Math.floor(Math.random() * denominators.length)];
-                        let n1 = Math.floor(Math.random() * (den - 1)) + 1;
-                        // Pastikan jawapan dipermudahkan atau bentuk string yang tepat
-                        ans = `${n1}/${den}`;
-                        questionText = `Nyatakan pecahan bagi ${n1} bahagian daripada ${den} keseluruhan.`;
-                    } else {
-                        // Peratusan asas daripada kuantiti
-                        const pct = [10, 20, 25, 50];
-                        let chosenPct = pct[Math.floor(Math.random() * pct.length)];
-                        let base = (Math.floor(Math.random() * 5) + 1) * 20; // gandaan 20 supaya mudah dibahagi
-                        ans = (chosenPct / 100) * base;
-                        questionText = `${chosenPct}% daripada ${base} = ?`;
-                    }
-                    break;
-
-                case 6:
-                    // Darjah 6: Integer Negatif Ringkas, Perpuluhan, & Pengenalan Algebra Asas
-                    let mode6 = Math.floor(Math.random() * 3);
-                    if (mode6 === 0) {
-                        // Perpuluhan
-                        num1 = (Math.random() * 10 + 2).toFixed(1);
-                        num2 = (Math.random() * 5 + 1).toFixed(1);
-                        ans = (parseFloat(num1) + parseFloat(num2)).toFixed(1);
-                        // Singkirkan perpuluhan sekiranya hujungnya .0
-                        if(ans.endsWith('.0')) ans = parseInt(ans);
-                        questionText = `${num1} + ${num2} = ?`;
-                    } else if (mode6 === 1) {
-                        // Integer Negatif
-                        num1 = Math.floor(Math.random() * 10) + 2;
-                        num2 = Math.floor(Math.random() * 15) + num1;
-                        ans = num1 - num2; // menghasilkan nilai negatif
-                        questionText = `${num1} - ${num2} = ?`;
-                    } else {
-                        // Ringkasan Algebra (Mencari x)
-                        let xVal = Math.floor(Math.random() * 12) + 2;
-                        let multi = Math.floor(Math.random() * 3) + 2;
-                        let constant = Math.floor(Math.random() * 10) + 1;
-                        let total = (multi * xVal) + constant;
-                        ans = xVal;
-                        questionText = `Jika ${multi}x + ${constant} = ${total}, apakah nilai x?`;
-                    }
-                    break;
-            }
-
-            state.currentAnswer = String(ans).trim().toLowerCase();
-            const qBox = document.getElementById('question-box');
-            qBox.innerText = questionText;
-            qBox.classList.remove('bounce-in');
-            void qBox.offsetWidth; // Trigger reflow untuk reset animasi
-            qBox.classList.add('bounce-in');
+    function initScore() {
+        const savedScore = localStorage.getItem('userScore');
+        if (savedScore !== null) {
+            currentScore = parseInt(savedScore, 10);
+        } else {
+            currentScore = 0;
         }
+        updateScoreDisplay();
+    }
 
-        // Semakan Jawapan
-        function checkAnswer(e) {
-            e.preventDefault();
-            const inputField = document.getElementById('answer-input');
-            const userAnswer = inputField.value.trim().toLowerCase();
-            const feedbackEl = document.getElementById('feedback');
+    function changeScore(amount) {
+        currentScore += amount;
+        localStorage.setItem('userScore', currentScore);
+        updateScoreDisplay();
+    }
 
-            if (!userAnswer) return;
-
-            if (userAnswer === state.currentAnswer) {
-                // Betul!
-                playSound('success');
-                state.streak++;
-                // Bonus streak points
-                let xpGained = 10 + (Math.min(state.streak, 5) * 2);
-                state.xp += xpGained;
-                
-                feedbackEl.innerText = `🎉 TEPAT SEKALI! +${xpGained} XP`;
-                feedbackEl.className = "h-6 text-md font-bold text-emerald-500 animate-bounce";
-                
-                // Semak Sistem Level Up (Setiap 100 XP)
-                let targetLevel = Math.floor(state.xp / 100) + 1;
-                if (targetLevel > state.level) {
-                    state.level = targetLevel;
-                    setTimeout(() => playSound('levelup'), 300);
-                    feedbackEl.innerText = `🚀 TAHAP BARU! Anda kini Tahap ${state.level}!`;
-                    feedbackEl.className = "h-6 text-md font-extrabold text-amber-500 animate-pulse";
-                }
-
-                updateDashboard();
-                inputField.value = '';
-                setTimeout(generateQuestion, 1200);
-
-            } else {
-                // Salah
-                playSound('fail');
-                state.streak = 0;
-                feedbackEl.innerText = `❌ Cuba lagi! Jawapan sebenar ialah: ${state.currentAnswer.toUpperCase()}`;
-                feedbackEl.className = "h-6 text-md font-bold text-red-500";
-                
-                updateDashboard();
-                inputField.value = '';
-                setTimeout(generateQuestion, 2000);
-            }
+    function resetScore() {
+        if(confirm("Tetapkan semula skor kepada 0?")) {
+            currentScore = 0;
+            localStorage.setItem('userScore', currentScore);
+            updateScoreDisplay();
         }
+    }
 
-        function updateDashboard() {
-            document.getElementById('xp-display').innerText = state.xp;
-            document.getElementById('lvl-display').innerText = state.level;
-            document.getElementById('streak-display').innerText = state.streak;
-        }
-    </script>
+    function updateScoreDisplay() {
+        document.getElementById('scoreDisplay').innerText = currentScore;
+    }
+
+    // Jalankan semua semakan sistem apabila halaman dibuka
+    window.onload = function() {
+        checkProfile();
+        initScore();
+    };
+</script>
+
 </body>
 </html>
