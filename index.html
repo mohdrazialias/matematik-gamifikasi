@@ -3,238 +3,427 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Profil & Skor Terintegrasi</title>
+    <title>MathQuest: Gamifikasi Matematik Sekolah Rendah</title>
     <style>
+        :root {
+            --primary: #4a90e2;
+            --secondary: #2ecc71;
+            --accent: #f1c40f;
+            --danger: #e74c3c;
+            --dark: #2c3e50;
+            --light: #f8f9fa;
+        }
+
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f7f6;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e0eafc, #cfdef3);
             margin: 0;
             padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            color: var(--dark);
+            min-height: 100vh;
         }
-        .dashboard {
-            display: flex;
-            gap: 20px;
-            max-width: 900px;
-            width: 100%;
-            flex-wrap: wrap;
-            justify-content: center;
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
         }
+
         .card {
             background: white;
             padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            flex: 1;
-            min-width: 320px;
-            max-width: 400px;
+            border-radius: 15px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
             box-sizing: border-box;
         }
-        h2 {
+
+        h1, h2, h3 {
             text-align: center;
-            color: #333;
             margin-top: 0;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #eee;
-            padding-bottom: 10px;
         }
+
+        h1 { color: var(--primary); font-size: 2rem; }
+
+        /* Status & Profile Section */
+        .profile-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--dark);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .user-info {
+            font-weight: bold;
+        }
+
+        .stats-grid {
+            display: flex;
+            gap: 15px;
+            font-weight: bold;
+        }
+
+        .stat-item {
+            background: rgba(255,255,255,0.1);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        /* Form Styling */
         .form-group {
             margin-bottom: 15px;
         }
+
         label {
             display: block;
             margin-bottom: 5px;
-            color: #666;
             font-weight: bold;
         }
-        input[type="text"], textarea {
+
+        input[type="text"], select {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
             box-sizing: border-box;
+            font-size: 1rem;
         }
-        textarea { resize: none; height: 70px; }
+
         button {
             width: 100%;
             padding: 12px;
-            color: white;
             border: none;
-            border-radius: 5px;
-            font-size: 15px;
-            cursor: pointer;
-            font-weight: bold;
-            margin-top: 10px;
-            transition: opacity 0.2s;
-        }
-        button:hover { opacity: 0.9; }
-        .btn-green { background-color: #28a745; }
-        .btn-blue { background-color: #007bff; }
-        .btn-red { background-color: #dc3545; }
-        
-        /* Gaya Paparan Profil & Skor */
-        .display-data p {
-            font-size: 16px;
-            background: #f9f9f9;
-            padding: 10px;
-            border-radius: 5px;
-            border-left: 5px solid #007bff;
-            margin: 10px 0;
-        }
-        .score-box {
-            text-align: center;
-            font-size: 48px;
-            font-weight: bold;
-            color: #28a745;
-            margin: 20px 0;
-            background: #e8f5e9;
-            padding: 15px;
             border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            color: white;
+            transition: transform 0.1s, background 0.2s;
         }
-        .score-controls {
+
+        button:active { transform: scale(0.98); }
+        .btn-primary { background-color: var(--primary); }
+        .btn-secondary { background-color: var(--secondary); }
+        .btn-danger { background-color: var(--danger); }
+
+        /* Grade Selection Grid */
+        .grid-menu {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .grid-menu button {
+            padding: 20px;
+            font-size: 1.2rem;
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .grid-menu button:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Quiz Arena */
+        .question-box {
+            font-size: 2rem;
+            text-align: center;
+            margin: 30px 0;
+            font-weight: bold;
+            background: var(--light);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px dashed var(--primary);
+        }
+
+        .feedback {
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin: 15px 0;
+            min-height: 25px;
+        }
+
+        .feedback.success { color: var(--secondary); }
+        .feedback.error { color: var(--danger); }
+
+        .nav-links {
             display: flex;
             gap: 10px;
+            margin-top: 15px;
         }
-        .score-controls button { flex: 1; }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 0.85rem;
+            color: #7f8c8d;
+        }
     </style>
 </head>
 <body>
 
-<div class="dashboard">
-    
-    <!-- BAHAGIAN 1: KAD PROFIL -->
-    <div class="card">
-        <!-- Borang Input Profil -->
-        <div id="formSection">
-            <h2>Cipta Profil</h2>
-            <div class="form-group">
-                <label for="nameInput">Nama Penuh:</label>
-                <input type="text" id="nameInput" placeholder="Masukkan nama anda">
-            </div>
-            <div class="form-group">
-                <label for="bioInput">Bio Diri:</label>
-                <textarea id="bioInput" placeholder="Ceritakan sedikit tentang diri anda"></textarea>
-            </div>
-            <button class="btn-green" onclick="saveProfile()">Simpan Profil</button>
-        </div>
+<div class="container">
 
-        <!-- Paparan Profil Terjaga -->
-        <div id="displaySection" class="display-data" style="display: none;">
-            <h2>Profil Pengguna</h2>
-            <p><strong>Nama:</strong> <span id="displayName"></span></p>
-            <p><strong>Bio:</strong> <span id="displayBio"></span></p>
-            <button class="btn-blue" onclick="editProfile()">Edit Profil</button>
-            <button class="btn-red" onclick="deleteProfile()">Padam Profil</button>
+    <!-- BAR STATUS ATAS (SENTIASA KELIHATAN SELEPAS LOG IN) -->
+    <div id="statusTopBar" class="profile-section" style="display: none;">
+        <div class="user-info">
+            👤 <span id="barUsername" style="font-weight: bold; margin-right: 5px;">Pemain</span> 
+            (<span id="barGrade">Darjah 1</span>)
+        </div>
+        <div class="stats-grid">
+            <div class="stat-item">🏆 Lvl <span id="barLevel">1</span></div>
+            <div class="stat-item">✨ XP: <span id="barXP">0</span></div>
+            <div class="stat-item">🔥 Streak: <span id="barStreak">0</span></div>
         </div>
     </div>
 
-    <!-- BAHAGIAN 2: KAD SISTEM SKOR -->
-    <div class="card">
-        <h2>Skor Semasa</h2>
-        <div class="score-box" id="scoreDisplay">0</div>
+    <!-- 1. HALAMAN DAFTAR / CIPTA PROFIL -->
+    <div id="authPage" class="card">
+        <h1>📐 MathQuest 🚀</h1>
+        <h2>Cipta Profil Pemain</h2>
+        <div class="form-group">
+            <label for="usernameInput">Nama Samaran:</label>
+            <input type="text" id="usernameInput" placeholder="Masukkan nama anda...">
+        </div>
+        <div class="form-group">
+            <label for="gradeSelect">Pilih Darjah Semasa:</label>
+            <select id="gradeSelect">
+                <option value="1">Darjah 1</option>
+                <option value="2">Darjah 2</option>
+                <option value="3">Darjah 3</option>
+                <option value="4">Darjah 4</option>
+                <option value="5">Darjah 5</option>
+                <option value="6">Darjah 6</option>
+            </select>
+        </div>
+        <button class="btn-primary" onclick="registerUser()">Mula Mengembara!</button>
+    </div>
+
+    <!-- 2. HALAMAN MENU UTAMA (PILIHAN ZON DARJAH) -->
+    <div id="menuPage" class="card" style="display: none;">
+        <h2>Pilih Zon Kuiz</h2>
+        <p style="text-align:center;">Sila pilih tahap kesukaran darjah untuk mendapatkan XP:</p>
+        <div class="grid-menu">
+            <button onclick="startQuiz(1)">Darjah 1</button>
+            <button onclick="startQuiz(2)">Darjah 2</button>
+            <button onclick="startQuiz(3)">Darjah 3</button>
+            <button onclick="startQuiz(4)">Darjah 4</button>
+            <button onclick="startQuiz(5)">Darjah 5</button>
+            <button onclick="startQuiz(6)">Darjah 6</button>
+        </div>
+        <hr style="margin-top: 30px; border: 0; border-top: 1px solid #eee;">
+        <button class="btn-danger" style="margin-top: 10px;" onclick="resetGame()">Padam Profil & Reset</button>
+    </div>
+
+    <!-- 3. HALAMAN KUIZ ARENA -->
+    <div id="quizPage" class="card" style="display: none;">
+        <h2 id="quizTitle">Zon Kuiz</h2>
+        <div class="question-box" id="questionText">0 + 0 = ?</div>
         
-        <div class="score-controls">
-            <button class="btn-green" onclick="changeScore(1)">+1 Mata</button>
-            <button class="btn-red" onclick="changeScore(-1)">-1 Mata</button>
+        <div class="form-group">
+            <input type="text" id="answerInput" placeholder="Taip jawapan anda di sini..." autocomplete="off">
         </div>
-        <button class="btn-blue" style="background-color: #6c757d;" onclick="resetScore()">Reset Skor</button>
+        
+        <div id="feedbackText" class="feedback"></div>
+        
+        <button class="btn-secondary" id="submitBtn" onclick="checkAnswer()">Semak Jawapan</button>
+        
+        <div class="nav-links">
+            <button class="btn-primary" style="background-color:#7f8c8d;" onclick="goBackMenu()">↩ Papan Menu</button>
+        </div>
     </div>
 
+    <footer>
+        MathQuest © 2026 - Dihoskan Percuma di GitHub Pages
+    </footer>
 </div>
 
 <script>
-    // ==========================================
-    // LOGIK JAVASCRIPT UNTUK SISTEM PROFIL
-    // ==========================================
-    function saveProfile() {
-        const name = document.getElementById('nameInput').value.trim();
-        const bio = document.getElementById('bioInput').value.trim();
+    // Struktur Data Global User
+    let user = {
+        username: "",
+        baseGrade: 1,
+        level: 1,
+        xp: 0,
+        streak: 0
+    };
 
-        if (name === "" || bio === "") {
-            alert("Sila isi semua ruangan profil!");
+    let currentQuizGrade = 1;
+    let currentCorrectAnswer = 0;
+
+    // 1. Semak Status Login masa halaman dibuka
+    window.onload = function() {
+        const savedData = localStorage.getItem('mathQuest_user');
+        if (savedData) {
+            user = JSON.parse(savedData);
+            updateStatsUI();
+            showPage('menuPage');
+        } else {
+            showPage('authPage');
+        }
+    };
+
+    function showPage(pageId) {
+        document.getElementById('authPage').style.display = pageId === 'authPage' ? 'block' : 'none';
+        document.getElementById('menuPage').style.display = pageId === 'menuPage' ? 'block' : 'none';
+        document.getElementById('quizPage').style.display = pageId === 'quizPage' ? 'block' : 'none';
+        
+        // Tunjuk Top Bar jika bukan di halaman register
+        document.getElementById('statusTopBar').style.display = pageId === 'authPage' ? 'none' : 'flex';
+    }
+
+    // 2. Logik Pendaftaran Profil
+    function registerUser() {
+        const name = document.getElementById('usernameInput').value.trim();
+        const grade = document.getElementById('gradeSelect').value;
+
+        if (name === "") {
+            alert("Sila masukkan nama samaran anda!");
             return;
         }
 
-        const userProfile = { name: name, bio: bio };
-        localStorage.setItem('savedProfile', JSON.stringify(userProfile));
-        checkProfile();
+        user.username = name;
+        user.baseGrade = parseInt(grade);
+        user.level = 1;
+        user.xp = 0;
+        user.streak = 0;
+
+        saveData();
+        updateStatsUI();
+        showPage('menuPage');
     }
 
-    function checkProfile() {
-        const data = localStorage.getItem('savedProfile');
-        if (data) {
-            const profile = JSON.parse(data);
-            document.getElementById('displayName').innerText = profile.name;
-            document.getElementById('displayBio').innerText = profile.bio;
-            document.getElementById('formSection').style.display = 'none';
-            document.getElementById('displaySection').style.display = 'block';
+    function saveData() {
+        localStorage.setItem('mathQuest_user', JSON.stringify(user));
+    }
+
+    function updateStatsUI() {
+        // Kira naik level berdasarkan formulir mudah: Setiap 100 XP naik 1 level
+        user.level = Math.floor(user.xp / 100) + 1;
+        saveData();
+
+        document.getElementById('barUsername').innerText = user.username;
+        document.getElementById('barGrade').innerText = "D" + user.baseGrade;
+        document.getElementById('barLevel').innerText = user.level;
+        document.getElementById('barXP').innerText = user.xp;
+        document.getElementById('barStreak').innerText = user.streak;
+    }
+
+    // 3. Logik Penghasilan Soalan Matematik mengikut Gred (Darjah 1-6)
+    function startQuiz(grade) {
+        currentQuizGrade = grade;
+        document.getElementById('quizTitle').innerText = "Kuiz Matematik - Darjah " + grade;
+        generateQuestion();
+        showPage('quizPage');
+        document.getElementById('answerInput').focus();
+    }
+
+    function generateQuestion() {
+        let num1, num2, operator = "+";
+        document.getElementById('feedbackText').className = "feedback";
+        document.getElementById('feedbackText').innerText = "";
+        document.getElementById('answerInput').value = "";
+        document.getElementById('submitBtn').style.display = "block";
+
+        switch(currentQuizGrade) {
+            case 1: // Tambah mudah (1-10)
+                num1 = Math.floor(Math.random() * 9) + 1;
+                num2 = Math.floor(Math.random() * 9) + 1;
+                currentCorrectAnswer = num1 + num2;
+                break;
+            case 2: // Tolak dan Tambah (1-50)
+                num1 = Math.floor(Math.random() * 30) + 20;
+                num2 = Math.floor(Math.random() * 19) + 1;
+                operator = Math.random() > 0.5 ? "+" : "-";
+                currentCorrectAnswer = operator === "+" ? num1 + num2 : num1 - num2;
+                break;
+            case 3: // Sifir Asas (Darab 1-9)
+                num1 = Math.floor(Math.random() * 8) + 2;
+                num2 = Math.floor(Math.random() * 9) + 1;
+                operator = "×";
+                currentCorrectAnswer = num1 * num2;
+                break;
+            case 4: // Bahagi & Kombinasi Nombor Besar
+                num2 = Math.floor(Math.random() * 8) + 2; 
+                currentCorrectAnswer = Math.floor(Math.random() * 9) + 1; 
+                num1 = num2 * currentCorrectAnswer; // Supaya jawapan genap bulat
+                operator = "÷";
+                break;
+            case 5: // Operasi Bergabung & Kurungan Mudah
+                num1 = Math.floor(Math.random() * 10) + 5;
+                num2 = Math.floor(Math.random() * 5) + 2;
+                let num3 = Math.floor(Math.random() * 10) + 1;
+                document.getElementById('questionText').innerText = `(${num1} × ${num2}) + ${num3} = ?`;
+                currentCorrectAnswer = (num1 * num2) + num3;
+                return;
+            case 6: // Persamaan Linear Mudah / Cari Nilai X
+                let x = Math.floor(Math.random() * 12) + 2;
+                let gandaan = Math.floor(Math.random() * 3) + 2;
+                num2 = Math.floor(Math.random() * 10) + 5;
+                num1 = (gandaan * x) - num2;
+                document.getElementById('questionText').innerText = `Jika ${gandaan}x - ${num2} = ${num1}, berapakah nilai x?`;
+                currentCorrectAnswer = x;
+                return;
+        }
+
+        document.getElementById('questionText').innerText = `${num1} ${operator} ${num2} = ?`;
+    }
+
+    function checkAnswer() {
+        const userAnswer = parseInt(document.getElementById('answerInput').value.trim());
+        const feedback = document.getElementById('feedbackText');
+
+        if (isNaN(userAnswer)) {
+            alert("Sila masukkan jawapan dalam bentuk nombor!");
+            return;
+        }
+
+        if (userAnswer === currentCorrectAnswer) {
+            user.streak += 1;
+            let xpGained = (currentQuizGrade * 10) + (user.streak > 3 ? 5 : 0);
+            user.xp += xpGained;
+            
+            feedback.className = "feedback success";
+            feedback.innerText = `Tahniah! 🎉 Jawapan Betul (+${xpGained} XP)`;
+            document.getElementById('submitBtn').style.display = "none";
+            
+            updateStatsUI();
+            setTimeout(generateQuestion, 1500);
         } else {
-            document.getElementById('formSection').style.display = 'block';
-            document.getElementById('displaySection').style.display = 'none';
+            user.streak = 0;
+            feedback.className = "feedback error";
+            feedback.innerText = `Salah! ❌ Jawapan yang betul ialah ${currentCorrectAnswer}`;
+            updateStatsUI();
         }
     }
 
-    function editProfile() {
-        const data = localStorage.getItem('savedProfile');
-        if (data) {
-            const profile = JSON.parse(data);
-            document.getElementById('nameInput').value = profile.name;
-            document.getElementById('bioInput').value = profile.bio;
+    document.getElementById('answerInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            checkAnswer();
         }
-        document.getElementById('formSection').style.display = 'block';
-        document.getElementById('displaySection').style.display = 'none';
+    });
+
+    function goBackMenu() {
+        showPage('menuPage');
     }
 
-    function deleteProfile() {
-        if (confirm("Adakah anda pasti mahu memadam profil ini?")) {
-            localStorage.removeItem('savedProfile');
-            document.getElementById('nameInput').value = "";
-            document.getElementById('bioInput').value = "";
-            checkProfile();
+    function resetGame() {
+        if (confirm("Adakah anda pasti mahu memadam profil dan set semula semua skor/XP ke 0?")) {
+            localStorage.removeItem('mathQuest_user');
+            showPage('authPage');
+            document.getElementById('usernameInput').value = "";
         }
     }
-
-    // ==========================================
-    // LOGIK JAVASCRIPT UNTUK SISTEM SKOR
-    // ==========================================
-    let currentScore = 0;
-
-    function initScore() {
-        const savedScore = localStorage.getItem('userScore');
-        if (savedScore !== null) {
-            currentScore = parseInt(savedScore, 10);
-        } else {
-            currentScore = 0;
-        }
-        updateScoreDisplay();
-    }
-
-    function changeScore(amount) {
-        currentScore += amount;
-        localStorage.setItem('userScore', currentScore);
-        updateScoreDisplay();
-    }
-
-    function resetScore() {
-        if(confirm("Tetapkan semula skor kepada 0?")) {
-            currentScore = 0;
-            localStorage.setItem('userScore', currentScore);
-            updateScoreDisplay();
-        }
-    }
-
-    function updateScoreDisplay() {
-        document.getElementById('scoreDisplay').innerText = currentScore;
-    }
-
-    // Jalankan semua semakan sistem apabila halaman dibuka
-    window.onload = function() {
-        checkProfile();
-        initScore();
-    };
 </script>
-
 </body>
 </html>
